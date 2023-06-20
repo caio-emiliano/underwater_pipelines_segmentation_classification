@@ -30,14 +30,14 @@ Para reproduzir os resultados deste projeto, é necessário instalar as seguinte
 
 2. Instale as dependências necessárias executando o comando `pip install -r requirements.txt`.
 
-3. Instale o Detectron 2 (conforme feito nos notebooks "Detectron2_Training.ipynb" e/ou "Detectron2_Inference.ipynb" do projeto)
-
-4. Instale o pycocotools seguindo os passos abaixo
+3. Instale o pycocotools seguindo os passos abaixo
     1. > pip install cython
     2. > pip install numpy
     3. > git clone https://github.com/cocodataset/cocoapi.git
     4. > cd cocoapi/PythonAPI
     5. > python setup.py build_ext install
+
+4. Instale o Detectron 2 (conforme feito nos notebooks "Detectron2_Training.ipynb" e/ou "Detectron2_Inference.ipynb" do projeto)
 
 5. Execute os notebooks Jupyter em `notebooks/` para reproduzir os passos do projeto.
 
