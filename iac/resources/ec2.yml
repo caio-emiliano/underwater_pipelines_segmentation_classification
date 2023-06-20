@@ -1,0 +1,52 @@
+Resources:
+  detectron2EC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      Tags:
+        - Key: Name # Definindo o nome da instância
+          Value: detectron2
+      ImageId: ami-0e9d5865ca0d35e70 #ami-0b0f111b5dcb2800f
+      InstanceType: p2.xlarge
+      KeyName: detectron2-pipeline
+      NetworkInterfaces: 
+        - AssociatePublicIpAddress: true
+          DeviceIndex: 0
+          GroupSet: 
+            - Ref: detectronSecurityGroup
+          SubnetId: 
+            Ref: detectronSubnet
+      BlockDeviceMappings:
+        - DeviceName: /dev/sda1
+          Ebs:
+            VolumeSize: 100
+            VolumeType: gp3
+      IamInstanceProfile: !Ref detectron2Profile
+      UserData: !Base64 |
+        #!/bin/bash
+        #Atualizando ubuntu e baixando o driver NVIDIA
+        sudo apt-get update -y
+        wget https://us.download.nvidia.com/tesla/440.118.02/NVIDIA-Linux-x86_64-440.118.02.run
+
+        #Instalando dependências para instalar o driver NVIDIA
+        sudo apt-get update -y && sudo apt-get install build-essential -y
+        sudo apt-get install libglvnd-dev -y
+        sudo apt-get install pkg-config xorg-dev -y
+        sudo apt-get install linux-image-extra-virtual -y
+        sudo apt-get upgrade -y
+
+        #Instalando o driver NVIDIa
+        sudo sh NVIDIA-Linux-x86_64-440.118.02.run --silent
+
+        #Instalando o Docker versão GPU
+        curl -s -L https://nvidia.github.io/nvidia-docker/gpgkey | \
+        sudo apt-key add -
+
+        distribution=$(. /etc/os-release;echo $ID$VERSION_ID)
+        curl -s -L https://nvidia.github.io/nvidia-docker/$distribution/nvidia-docker.list | \
+        sudo tee /etc/apt/sources.list.d/nvidia-docker.list
+
+        sudo apt-get update
+
+        sudo apt-get install -y nvidia-docker2
+
+        sudo systemctl restart docker

@@ -1,0 +1,38 @@
+service: detectron2-training
+
+projectDir: ../../
+variablesResolutionMode: 20210326
+
+#frameworkVersion: '>=2.59.0 <=2.68.0'
+
+provider:
+  name: aws
+  runtime: python3.9
+  region: us-east-2
+  zone: us-east-2
+  deploymentBucket: 
+    name: ${self:custom.deployment_bucket}
+    serverSideEncryption: AES256
+  lambdaHashingVersion: 20201221
+package: 
+  individually: true
+  patterns:
+    - '!node_modules/**'
+
+custom:
+  pythonRequirements:
+    pythonBin: python3
+  region: ${opt:region, self:provider.region}
+  detectron2_bucket: detectron2-pipeline
+  deployment_bucket: ${aws:accountId}-${self:custom.region}-deployment-bucket
+resources: 
+  - Description: Automatically created by Serverless Framework
+  - ${file(./resources/network.yml)}
+  - ${file(./resources/ec2.yml)}
+  - ${file(./resources/iam.yml)}
+
+plugins:
+  - serverless-python-requirements
+  - serverless-iam-roles-per-function
+  - serverless-plugin-create-deployment-bucket
+  - serverless-attach-managed-policy
